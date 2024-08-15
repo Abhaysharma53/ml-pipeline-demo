@@ -10,7 +10,7 @@ df.drop(columns = ['tweet_id'], inplace = True)
 
 final_df = df[df['sentiment'].isin(['neutral', 'sadness'])]
 
-final_df = final_df['sentiment'].replace({'neutral':0, 'sadness':1})
+final_df['sentiment'].replace({'neutral':0, 'sadness':1}, inplace = True)
 
 train_data, test_data = train_test_split(final_df, test_size= 0.2, random_state= 42)
 

@@ -11,6 +11,9 @@ from nltk.stem import SnowballStemmer, WordNetLemmatizer
 train_df = pd.read_csv('./data/raw/train.csv')
 test_df = pd.read_csv('./data/raw/test.csv')
 
+train_df.fillna('', inplace = True)
+test_df.fillna('', inplace = True)
+
 nltk.download('wordnet')
 nltk.download('stopwords')
 
@@ -72,6 +75,7 @@ def normalize_text(df):
 #processing raw train & test data
 train_process_data = normalize_text(train_df)
 test_process_data = normalize_text(test_df)
+
 
 #store the data inside data/processed
 data_path  = os.path.join("data", "processed")

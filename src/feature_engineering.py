@@ -5,7 +5,7 @@ import yaml
 
 from sklearn.feature_extraction.text import CountVectorizer
 
-def load_params(url):
+def load_params(url: str) -> dict:
     try:
         with open(url, 'r') as file:
             params = yaml.safe_load(file)
@@ -24,7 +24,7 @@ def load_params(url):
         print(f"An unexpected error occurred while loading parameters: {e}")
         raise
 
-def load_data(data_path):
+def load_data(data_path: str) -> tuple:
     try:
         train_df = pd.read_csv(os.path.join(data_path, 'train_processed.csv'))
         test_df = pd.read_csv(os.path.join(data_path, 'test_processed.csv'))
@@ -44,7 +44,7 @@ def load_data(data_path):
         print(f"An unexpected error occurred while loading data: {e}")
         raise
 
-def apply_count_vectorizer(train_df, test_df, max_feature):
+def apply_count_vectorizer(train_df: pd.DataFrame, test_df: pd.DataFrame, max_feature: int) -> tuple:
     try:
         vectorizer = CountVectorizer(max_features=max_feature)
         X_train = train_df['content'].values
@@ -70,7 +70,7 @@ def apply_count_vectorizer(train_df, test_df, max_feature):
         print(f"An unexpected error occurred while applying CountVectorizer: {e}")
         raise
 
-def save_FE_data(train, test, data_path):
+def save_FE_data(train: pd.DataFrame, test: pd.DataFrame, data_path: str) -> None:
     try:
         data_path = os.path.join(data_path, 'features')
         os.makedirs(data_path, exist_ok=True)

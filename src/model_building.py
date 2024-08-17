@@ -6,7 +6,7 @@ import os
 
 from sklearn.ensemble import GradientBoostingClassifier
 
-def load_params(url):
+def load_params(url: str) -> dict:
     try:
         with open(url, 'r') as file:
             params = yaml.safe_load(file)
@@ -26,7 +26,7 @@ def load_params(url):
         print(f"An unexpected error occurred while loading parameters: {e}")
         raise
 
-def load_feature(datapath):
+def load_feature(datapath: str) -> pd.DataFrame:
     try:
         train_data = pd.read_csv(os.path.join(datapath, 'train_bow.csv'))
         return train_data
@@ -43,7 +43,7 @@ def load_feature(datapath):
         print(f"An unexpected error occurred while loading features: {e}")
         raise
 
-def train_model(X_train, Y_train, n_estimator, learn_rate):
+def train_model(X_train: pd.DataFrame, Y_train: pd.DataFrame, n_estimator: int, learn_rate: float) -> GradientBoostingClassifier:
     try:
         clf = GradientBoostingClassifier(n_estimators=n_estimator, learning_rate=learn_rate)
         clf.fit(X_train, Y_train)
@@ -55,7 +55,7 @@ def train_model(X_train, Y_train, n_estimator, learn_rate):
         print(f"An unexpected error occurred while training the model: {e}")
         raise
 
-def save_model(model):
+def save_model(model: GradientBoostingClassifier) -> None:
     try:
         with open('model.pkl', 'wb') as file:
             pickle.dump(model, file)

@@ -6,7 +6,7 @@ import json
 
 from sklearn.metrics import accuracy_score, precision_score, recall_score, roc_auc_score
 
-def load_model(url):
+def load_model(url: str):
     try:
         with open(url, 'rb') as file:
             clf = pickle.load(file)
@@ -21,7 +21,7 @@ def load_model(url):
         print(f"An unexpected error occurred while loading the model: {e}")
         raise
 
-def load_data(datapath):
+def load_data(datapath: str) -> pd.DataFrame:
     try:
         test_data = pd.read_csv(os.path.join(datapath, 'test_bow.csv'))
         return test_data
@@ -38,7 +38,7 @@ def load_data(datapath):
         print(f"An unexpected error occurred while loading data: {e}")
         raise
 
-def evaluate_model(clf, X_test, Y_test):
+def evaluate_model(clf, X_test: pd.DataFrame, Y_test: pd.DataFrame) -> dict:
     try:
         Y_pred = clf.predict(X_test)
         Y_pred_proba = clf.predict_proba(X_test)[:, 1]
@@ -63,7 +63,7 @@ def evaluate_model(clf, X_test, Y_test):
         print(f"An unexpected error occurred while evaluating the model: {e}")
         raise
 
-def save_metrics_dict(metrics, file_path):
+def save_metrics_dict(metrics: dict, file_path: str) -> None:
     try:
         with open(file_path, 'w') as file:
             json.dump(metrics, file, indent=4)

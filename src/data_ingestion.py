@@ -5,7 +5,7 @@ import yaml
 
 from sklearn.model_selection import train_test_split
 
-def load_params(url):
+def load_params(url: str) -> dict:
     try:
         with open(url, 'r') as file:
             params = yaml.safe_load(file)
@@ -24,7 +24,7 @@ def load_params(url):
         print(f"An unexpected error occurred while loading parameters: {e}")
         raise
 
-def load_dataset(data_url):
+def load_dataset(data_url: str) -> pd.DataFrame:
     try:
         df = pd.read_csv(data_url)
         return df
@@ -38,7 +38,7 @@ def load_dataset(data_url):
         print(f"An unexpected error occurred while loading the dataset: {e}")
         raise
 
-def preprocess_data(df):
+def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
     try:
         df.drop(columns=['tweet_id'], inplace=True)
     except KeyError:
@@ -64,7 +64,7 @@ def preprocess_data(df):
     
     return final_df
 
-def save_data(train_df, test_df, data_path):
+def save_data(train_df: pd.DataFrame, test_df: pd.DataFrame, data_path: str) -> None:
     try:
         data_path = os.path.join(data_path, 'raw')
         os.makedirs(data_path, exist_ok=True)  # `exist_ok=True` prevents error if directory already exists

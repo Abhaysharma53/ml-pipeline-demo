@@ -10,7 +10,7 @@ from nltk.stem import WordNetLemmatizer
 nltk.download('wordnet')
 nltk.download('stopwords')
 
-def load_data(data_path):
+def load_data(data_path: str) -> tuple:
     try:
         train_df = pd.read_csv(os.path.join(data_path, 'train.csv'))
         test_df = pd.read_csv(os.path.join(data_path, 'test.csv'))
@@ -28,7 +28,7 @@ def load_data(data_path):
         print(f"An unexpected error occurred while loading data: {e}")
         raise
 
-def data_impute(train_df, test_df):
+def data_impute(train_df: pd.DataFrame, test_df: pd.DataFrame) -> tuple:
     try:
         train_df.fillna('', inplace=True)
         test_df.fillna('', inplace=True)
@@ -37,7 +37,7 @@ def data_impute(train_df, test_df):
         print(f"An unexpected error occurred while imputing data: {e}")
         raise
 
-def lemmatization(text):
+def lemmatization(text: str) -> str:
     try:
         lemmatizer = WordNetLemmatizer()
         text = text.split()
@@ -47,7 +47,7 @@ def lemmatization(text):
         print(f"An unexpected error occurred during lemmatization: {e}")
         raise
 
-def remove_stopwords(text):
+def remove_stopwords(text: str) -> str:
     try:
         stop_words = set(stopwords.words("english"))
         text = [i for i in str(text).split() if i not in stop_words]
@@ -56,7 +56,7 @@ def remove_stopwords(text):
         print(f"An unexpected error occurred while removing stopwords: {e}")
         raise
 
-def removing_numbers(text):
+def removing_numbers(text: str) -> str:
     try:
         text = ''.join([i for i in text if not i.isdigit()])
         return text
@@ -64,7 +64,7 @@ def removing_numbers(text):
         print(f"An unexpected error occurred while removing numbers: {e}")
         raise
 
-def lower_case(text):
+def lower_case(text: str) -> str:
     try:
         text = text.split()
         text = [y.lower() for y in text]
@@ -73,7 +73,7 @@ def lower_case(text):
         print(f"An unexpected error occurred while converting to lower case: {e}")
         raise
 
-def removing_punctuations(text):
+def removing_punctuations(text: str) -> str:
     try:
         text = re.sub('[%s]' % re.escape("""!"#$%&'()*+,،-./:;<=>؟?@[\]^_`{|}~"""), ' ', text)
         text = text.replace('؛', "")
@@ -84,7 +84,7 @@ def removing_punctuations(text):
         print(f"An unexpected error occurred while removing punctuations: {e}")
         raise
 
-def removing_urls(text):
+def removing_urls(text: str) -> str:
     try:
         url_pattern = re.compile(r'https?://\S+|www\.\S+')
         return url_pattern.sub(r'', text)
@@ -92,19 +92,19 @@ def removing_urls(text):
         print(f"An unexpected error occurred while removing URLs: {e}")
         raise
 
-def remove_small_sentences(df):
-    try:
-        for i in range(len(df)):
-            if len(df.text.iloc[i].split()) < 3:
-                df.text.iloc[i] = np.nan
-    except KeyError:
-        print("Error: 'text' column not found in the dataframe.")
-        raise
-    except Exception as e:
-        print(f"An unexpected error occurred while removing small sentences: {e}")
-        raise
+# def remove_small_sentences(df):
+#     try:
+#         for i in range(len(df)):
+#             if len(df.text.iloc[i].split()) < 3:
+#                 df.text.iloc[i] = np.nan
+#     except KeyError:
+#         print("Error: 'text' column not found in the dataframe.")
+#         raise
+#     except Exception as e:
+#         print(f"An unexpected error occurred while removing small sentences: {e}")
+#         raise
 
-def normalize_text(df):
+def normalize_text(df: pd.DataFrame) -> pd.DataFrame:
     try:
         df.content = df.content.apply(lambda content: lower_case(content))
         df.content = df.content.apply(lambda content: remove_stopwords(content))
@@ -120,7 +120,7 @@ def normalize_text(df):
         print(f"An unexpected error occurred while normalizing text: {e}")
         raise
 
-def save_processed_data(train_df, test_df, data_path):
+def save_processed_data(train_df: pd.DataFrame, test_df: pd.DataFrame, data_path: str) -> None:
     try:
         data_path = os.path.join(data_path, 'processed')
         os.makedirs(data_path, exist_ok=True)

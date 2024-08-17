@@ -2,26 +2,44 @@ import numpy as np
 import pandas as pd
 import os
 import yaml
+import logging
 
 from sklearn.feature_extraction.text import CountVectorizer
+
+logger = logging.getLogger('Feature Engineering')
+logger.setLevel('DEBUG')
+
+console_handler = logging.StreamHandler()
+console_handler.setLevel('DEBUG')
+
+file_handler = logging.FileHandler('errors.log')
+file_handler.setLevel('WARNING')
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
 
 def load_params(url: str) -> dict:
     try:
         with open(url, 'r') as file:
             params = yaml.safe_load(file)
         max_feature = params.get('feature_engineering', {}).get('max_features', 1000)  # Default to 1000 if not specified
+        logger.debug('parameter extracted from {}'.format(url))
         return max_feature
     except FileNotFoundError:
-        print(f"Error: The file {url} was not found.")
+        logger.error(f"Error: The file {url} was not found.")
         raise
     except yaml.YAMLError as e:
-        print(f"Error parsing YAML file: {e}")
+        logger.error(f"Error parsing YAML file: {e}")
         raise
     except KeyError:
-        print("Error: 'feature_engineering' or 'max_features' key not found in params.")
+        logger.error("Error: 'feature_engineering' or 'max_features' key not found in params.")
         raise
     except Exception as e:
-        print(f"An unexpected error occurred while loading parameters: {e}")
+        logger.error(f"An unexpected error occurred while loading parameters: {e}")
         raise
 
 def load_data(data_path: str) -> tuple:
@@ -30,18 +48,19 @@ def load_data(data_path: str) -> tuple:
         test_df = pd.read_csv(os.path.join(data_path, 'test_processed.csv'))
         train_df.fillna('', inplace=True)
         test_df.fillna('', inplace=True)
+        logger.debug('Data Import successful')
         return train_df, test_df
     except FileNotFoundError as e:
-        print(f"Error: File not found in path {data_path}. Details: {e}")
+        logger.error(f"Error: File not found in path {data_path}. Details: {e}")
         raise
     except pd.errors.EmptyDataError:
-        print("Error: One of the CSV files is empty.")
+        logger.error("Error: One of the CSV files is empty.")
         raise
     except pd.errors.ParserError:
-        print("Error: Error parsing one of the CSV files.")
+        logger.error("Error: Error parsing one of the CSV files.")
         raise
     except Exception as e:
-        print(f"An unexpected error occurred while loading data: {e}")
+        logger.error(f"An unexpected error occurred while loading data: {e}")
         raise
 
 def apply_count_vectorizer(train_df: pd.DataFrame, test_df: pd.DataFrame, max_feature: int) -> tuple:
@@ -64,10 +83,10 @@ def apply_count_vectorizer(train_df: pd.DataFrame, test_df: pd.DataFrame, max_fe
         
         return train_df_bow, test_df_bow
     except KeyError as e:
-        print(f"Error: Column not found in dataframe: {e}")
+        logger.error(f"Error: Column not found in dataframe: {e}")
         raise
     except Exception as e:
-        print(f"An unexpected error occurred while applying CountVectorizer: {e}")
+        logger.error(f"An unexpected error occurred while applying CountVectorizer: {e}")
         raise
 
 def save_FE_data(train: pd.DataFrame, test: pd.DataFrame, data_path: str) -> None:
@@ -76,11 +95,12 @@ def save_FE_data(train: pd.DataFrame, test: pd.DataFrame, data_path: str) -> Non
         os.makedirs(data_path, exist_ok=True)
         train.to_csv(os.path.join(data_path, 'train_bow.csv'), index=False)
         test.to_csv(os.path.join(data_path, 'test_bow.csv'), index=False)
+        logger.debug('Feature engineered data exported to csv')
     except IOError as e:
-        print(f"Error: An I/O error occurred while saving feature engineering data: {e}")
+        logger.error(f"Error: An I/O error occurred while saving feature engineering data: {e}")
         raise
     except Exception as e:
-        print(f"An unexpected error occurred while saving feature engineering data: {e}")
+        logger.error(f"An unexpected error occurred while saving feature engineering data: {e}")
         raise
 
 def main():

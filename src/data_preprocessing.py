@@ -7,15 +7,18 @@ import nltk
 import string
 from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer, WordNetLemmatizer
-
-train_df = pd.read_csv('./data/raw/train.csv')
-test_df = pd.read_csv('./data/raw/test.csv')
-
-train_df.fillna('', inplace = True)
-test_df.fillna('', inplace = True)
-
 nltk.download('wordnet')
 nltk.download('stopwords')
+#extract data from data/raw
+def load_data(data_path):
+    train_df = pd.read_csv(os.path.join(data_path, 'train.csv'))
+    test_df = pd.read_csv(os.path.join(data_path, 'test.csv'))
+    return train_df, test_df
+
+def data_impute(train_df, test_df):
+    train_df.fillna('', inplace = True)
+    test_df.fillna('', inplace = True)
+    return train_df, test_df
 
 def lemmatization(text):
     lemmatizer = WordNetLemmatizer()
@@ -72,14 +75,32 @@ def normalize_text(df):
     df.content = df.content.apply(lambda content : lemmatization(content))
     return df
 
+def save_processed_data(train_df, test_df, data_path):
+    data_path = os.path.join(data_path, 'processed')
+    os.makedirs(data_path)
+    train_df.to_csv(os.path.join(data_path, 'train_processed.csv'))
+    test_df.to_csv(os.path.join(data_path, 'test_processed.csv'))
+
+
 #processing raw train & test data
-train_process_data = normalize_text(train_df)
-test_process_data = normalize_text(test_df)
+def main():
+    train_df, test_df = load_data(data_path= 'data/raw')
+    train_df, test_df = data_impute(train_df, test_df)
+    train_process_data = normalize_text(train_df)
+    test_process_data = normalize_text(test_df)
+    save_processed_data(train_process_data, test_process_data, data_path= 'data')
+
+if __name__ == '__main__':
+    main()
 
 
-#store the data inside data/processed
-data_path  = os.path.join("data", "processed")
-os.makedirs(data_path)
 
-train_process_data.to_csv(os.path.join(data_path, "train_processed.csv"))
-test_process_data.to_csv(os.path.join(data_path, "test_processed.csv"))
+
+
+
+# #store the data inside data/processed
+# data_path  = os.path.join("data", "processed")
+# os.makedirs(data_path)
+
+# train_process_data.to_csv(os.path.join(data_path, "train_processed.csv"))
+# test_process_data.to_csv(os.path.join(data_path, "test_processed.csv"))
